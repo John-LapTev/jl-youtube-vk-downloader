@@ -17,36 +17,56 @@ curl -L "https://github.com/John-LapTev/jl-youtube-vk-downloader/archive/main.zi
 echo Проверка доступных обновлений...
 powershell -Command "Expand-Archive -Force 'main.zip' -DestinationPath '.'"
 
-:: Создаем список файлов для обновления
 echo.
 echo Доступны следующие обновления:
 echo -------------------------------
+
 cd jl-youtube-vk-downloader-main
 
-:: Проверяем обычные файлы
+:: Создаем временный файл для списка изменений
+type nul > ..\changes.txt
+
+:: Проверяем файлы в корневой директории
 for %%F in (*.*) do (
     if exist "..\..\%%F" (
         fc /b "%%F" "..\..\%%F" >nul 2>&1
         if errorlevel 1 (
-            echo Будет обновлен: %%F
+            echo Будет обновлен: %%F >> ..\changes.txt
             set "has_updates=1"
         )
     ) else (
-        echo Будет добавлен: %%F
+        echo Будет добавлен: %%F >> ..\changes.txt
         set "has_updates=1"
     )
 )
 
-:: Проверяем папки (кроме venv)
-for /d %%D in (*) do (
-    if not "%%D"=="venv" (
-        if not exist "..\..\%%D" (
-            echo Будет добавлена папка: %%D
-            set "has_updates=1"
+:: Рекурсивная проверка всех подпапок
+for /f "tokens=*" %%D in ('dir /a:d /b /s') do (
+    set "relative_path=%%D"
+    set "relative_path=!relative_path:%CD%\=!"
+    
+    if not "!relative_path!"=="venv" (
+        if not "!relative_path:~0,4!"==".git" (
+            pushd "%%D"
+            for %%F in (*.*) do (
+                if exist "..\..\..\!relative_path!\%%F" (
+                    fc /b "%%F" "..\..\..\!relative_path!\%%F" >nul 2>&1
+                    if errorlevel 1 (
+                        echo Будет обновлен: !relative_path!\%%F >> ..\..\changes.txt
+                        set "has_updates=1"
+                    )
+                ) else (
+                    echo Будет добавлен: !relative_path!\%%F >> ..\..\changes.txt
+                    set "has_updates=1"
+                )
+            )
+            popd
         )
     )
 )
 
+:: Показываем изменения
+type ..\changes.txt
 echo -------------------------------
 
 :: Проверяем, есть ли обновления
@@ -65,29 +85,19 @@ if errorlevel 2 goto CANCEL_UPDATE
 echo.
 echo Установка обновлений...
 
-:: Копируем файлы
-for %%F in (*.*) do (
-    if exist "..\..\%%F" (
-        fc /b "%%F" "..\..\%%F" >nul 2>&1
-        if errorlevel 1 (
-            echo Обновление: %%F
-            copy /y "%%F" "..\.." >nul 2>&1
-        )
-    ) else (
-        echo Добавление: %%F
-        copy /y "%%F" "..\.." >nul 2>&1
+:: Обновляем файлы из списка изменений
+for /f "tokens=*" %%L in (..\changes.txt) do (
+    set "line=%%L"
+    set "file=!line:~16!"
+    
+    if "!line:~0,14!"=="Будет обновлен" (
+        echo Обновление: !file!
+        copy /y "!file!" "..\..\!file!" >nul 2>&1
     )
-)
-
-:: Копируем папки
-for /d %%D in (*) do (
-    if not "%%D"=="venv" (
-        if exist "..\..\%%D" (
-            xcopy /s /y /d "%%D" "..\..\%%D" >nul 2>&1
-        ) else (
-            echo Добавление папки: %%D
-            xcopy /s /y "%%D" "..\..\%%D" >nul 2>&1
-        )
+    if "!line:~0,14!"=="Будет добавлен" (
+        echo Добавление: !file!
+        if not exist "..\..\!file!\.." mkdir "..\..\!file!\.." 2>nul
+        copy /y "!file!" "..\..\!file!" >nul 2>&1
     )
 )
 
@@ -109,5 +119,3 @@ rmdir /s /q temp
 
 echo.
 pause
-
-endlocal
