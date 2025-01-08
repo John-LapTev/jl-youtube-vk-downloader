@@ -17,6 +17,15 @@ if not exist ffmpeg.exe (
     exit /b 1
 )
 
+:: Спрашиваем про обновление
+choice /c YN /n /m "Проверить обновления программы? (Y/N) "
+if errorlevel 2 goto SKIP_UPDATE
+if errorlevel 1 goto CHECK_UPDATE
+
+:CHECK_UPDATE
+call UPDATE.bat
+
+:SKIP_UPDATE
 :: Активируем виртуальное окружение и запускаем программу
 call venv\Scripts\activate.bat
 python src\main.py

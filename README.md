@@ -2,6 +2,8 @@
 
 A convenient video downloader that allows you to download content from YouTube and VK. Supports various video formats, language version selection, and MP3 conversion.
 
+![Program Interface](docs/img/app.png)
+
 [🇷🇺 Русская версия](README_RU.md)
 
 ## Features
