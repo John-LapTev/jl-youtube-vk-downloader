@@ -16,6 +16,26 @@
 
 Note: When running from source, ffmpeg.exe must be in the root folder. The setup.bat script will download it automatically.
 
+## Program Updates
+
+### Automatic Updates
+When starting the program using run.bat, you will be prompted to check for updates:
+1. Select 'Y' to check for available updates
+2. The system will show you the list of files to be updated
+3. You can choose whether to install the updates or not
+
+### Manual Updates
+You can manually check and install updates:
+1. Run UPDATE.bat from program folder
+2. The system will check for available updates
+3. You will see the list of files to be updated
+4. Choose whether to install the updates
+
+### After Updates
+- If the program doesn't start after updating, run setup.bat
+- This will reinstall all dependencies and ensure everything works correctly
+- Your settings and downloaded files will not be affected
+
 ## Usage
 
 ### Single Video Download

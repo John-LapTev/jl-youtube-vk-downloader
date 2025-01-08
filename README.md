@@ -20,6 +20,7 @@ A convenient video downloader that allows you to download content from YouTube a
 - Auto-open folder after download
 - Work with URL lists (load/save)
 - Portable version (no installation required)
+- Automatic updates check and update system
 
 ## Quick Start
 
@@ -29,6 +30,14 @@ A convenient video downloader that allows you to download content from YouTube a
 4. Click "Get Info"
 5. Select quality and language
 6. Click "Download Video"
+
+## Updates
+
+The program includes an automatic update system:
+- At startup, you can check for updates
+- You can manually check updates by running UPDATE.bat
+- The system will show available updates before applying them
+- If program doesn't start after update, run setup.bat
 
 ## Documentation
 
