@@ -126,22 +126,19 @@ for /f "usebackq tokens=*" %%L in ("..\changes.txt") do (
 
 echo -------------------------------
 echo.
-echo ✅ Обновление успешно завершено!
+echo Обновление успешно завершено!
 echo.
-echo ⚠️ ВНИМАНИЕ:
-echo    * Если программа не запускается после обновления,
-echo    * запустите setup.bat для переустановки зависимостей
-echo    * Нажмите любую клавишу для завершения...
+echo ВНИМАНИЕ:
+echo - Если программа не запускается после обновления,
+echo - запустите setup.bat для переустановки зависимостей
 echo.
-pause > nul
+pause
 goto CLEANUP
 
 :CANCEL_UPDATE
 echo.
-echo ❌ Обновление отменено.
-echo    Нажмите любую клавишу для выхода...
-echo.
-pause > nul
+echo Обновление отменено.
+pause
 goto CLEANUP
 
 :CLEANUP
@@ -151,12 +148,11 @@ if exist temp (
     rmdir /s /q temp
     if exist temp (
         echo.
-        echo ⚠️ Не удалось удалить временные файлы.
-        echo    Пожалуйста, удалите папку temp вручную.
+        echo Не удалось удалить временные файлы.
+        echo Пожалуйста, удалите папку temp вручную.
         echo.
     )
 )
 
-:: Финальная пауза перед выходом
-timeout /t 3
+timeout /t 2 /nobreak
 exit
