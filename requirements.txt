@@ -1,0 +1,6 @@
+yt-dlp==2024.3.10
+customtkinter==5.2.1
+pillow==10.2.0
+packaging==23.2
+asyncio==3.4.3
+aiohttp==3.9.1

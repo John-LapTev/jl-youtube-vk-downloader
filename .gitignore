@@ -1,0 +1,43 @@
+# Виртуальное окружение
+venv/
+__pycache__/
+*.pyc
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Папки сборки
+build/
+dist/
+
+# Логи и загрузки
+*.log
+logs/
+downloads/
+
+# FFmpeg
+ffmpeg.exe
+ffmpeg.zip
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Временные файлы
+*.tmp
+*.bak
+*.swp
+*~
+
+# Файлы Python
+*.pyo
+*.pyd
+.Python
+develop-eggs/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
