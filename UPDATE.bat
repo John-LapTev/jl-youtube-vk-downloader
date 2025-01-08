@@ -2,12 +2,33 @@
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 
+:: Показываем, где мы находимся
+echo Текущая директория: %CD%
+echo.
+
+:: Проверяем, что мы в правильной папке
+if not exist "setup.bat" (
+    echo Ошибка: Скрипт должен быть запущен из корневой папки проекта!
+    echo Требуемые файлы не найдены в текущей директории.
+    pause
+    exit /b 1
+)
+
+:: Сохраняем текущую директорию
+set "CURRENT_DIR=%CD%"
+set "TEMP_DIR=%CD%\temp\jl-youtube-vk-downloader-main"
+
 echo Проверка обновлений...
 
+:: Проверяем и удаляем временную папку
+if exist "%CURRENT_DIR%\temp" (
+    rmdir /s /q "%CURRENT_DIR%\temp"
+    timeout /t 1 /nobreak >nul
+)
+
 :: Создаем временную папку
-if exist temp rmdir /s /q temp
-mkdir temp
-cd temp
+mkdir "%CURRENT_DIR%\temp"
+cd "%CURRENT_DIR%\temp"
 
 :: Скачиваем актуальные файлы для проверки
 echo Загрузка информации об обновлениях...
@@ -23,45 +44,42 @@ echo -------------------------------
 
 cd jl-youtube-vk-downloader-main
 
-:: Создаем временный файл для списка изменений
+:: Очищаем файл изменений
 type nul > ..\changes.txt
 
-:: Проверяем файлы в корневой директории
+:: Проверяем корневые файлы
+pushd "%TEMP_DIR%"
 for %%F in (*.*) do (
-    if exist "..\..\%%F" (
-        fc /b "%%F" "..\..\%%F" >nul 2>&1
+    if exist "%CURRENT_DIR%\%%F" (
+        fc /b "%%F" "%CURRENT_DIR%\%%F" >nul 2>&1
         if errorlevel 1 (
             echo Будет обновлен: %%F >> ..\changes.txt
-            set "has_updates=1"
         )
     ) else (
-        echo Будет добавлен: %%F >> ..\changes.txt
-        set "has_updates=1"
+        if not "%%F"=="changes.txt" (
+            echo Будет добавлен: %%F >> ..\changes.txt
+        )
     )
 )
 
-:: Рекурсивная проверка всех подпапок
-for /f "tokens=*" %%D in ('dir /a:d /b /s') do (
-    set "relative_path=%%D"
-    set "relative_path=!relative_path:%CD%\=!"
-    
-    if not "!relative_path!"=="venv" (
-        if not "!relative_path:~0,4!"==".git" (
-            pushd "%%D"
-            for %%F in (*.*) do (
-                if exist "..\..\..\!relative_path!\%%F" (
-                    fc /b "%%F" "..\..\..\!relative_path!\%%F" >nul 2>&1
-                    if errorlevel 1 (
-                        echo Будет обновлен: !relative_path!\%%F >> ..\..\changes.txt
-                        set "has_updates=1"
-                    )
-                ) else (
-                    echo Будет добавлен: !relative_path!\%%F >> ..\..\changes.txt
-                    set "has_updates=1"
+:: Проверяем подпапки рекурсивно
+for /d %%D in (*) do (
+    if not "%%D"=="venv" if not "%%D:~0,4"==".git" (
+        pushd "%%D"
+        for /f "delims=" %%F in ('dir /s /b /a-d') do (
+            set "FILE_PATH=%%F"
+            set "RELATIVE_PATH=!FILE_PATH:%TEMP_DIR%\=!"
+            
+            if exist "%CURRENT_DIR%\!RELATIVE_PATH!" (
+                fc /b "%%F" "%CURRENT_DIR%\!RELATIVE_PATH!" >nul 2>&1
+                if errorlevel 1 (
+                    echo Будет обновлен: !RELATIVE_PATH! >> ..\..\changes.txt
                 )
+            ) else (
+                echo Будет добавлен: !RELATIVE_PATH! >> ..\..\changes.txt
             )
-            popd
         )
+        popd
     )
 )
 
@@ -69,10 +87,13 @@ for /f "tokens=*" %%D in ('dir /a:d /b /s') do (
 type ..\changes.txt
 echo -------------------------------
 
-:: Проверяем, есть ли обновления
-if not defined has_updates (
+:: Проверяем, есть ли изменения
+findstr /r /c:"." ..\changes.txt >nul
+if errorlevel 1 (
     echo.
     echo Обновления не требуются.
+    echo Нажмите любую клавишу для выхода...
+    pause > nul
     goto CLEANUP
 )
 
@@ -84,38 +105,58 @@ if errorlevel 2 goto CANCEL_UPDATE
 :: Если пользователь согласился, выполняем обновление
 echo.
 echo Установка обновлений...
+echo -------------------------------
 
 :: Обновляем файлы из списка изменений
-for /f "tokens=*" %%L in (..\changes.txt) do (
+for /f "usebackq tokens=*" %%L in ("..\changes.txt") do (
     set "line=%%L"
     set "file=!line:~16!"
     
     if "!line:~0,14!"=="Будет обновлен" (
         echo Обновление: !file!
-        copy /y "!file!" "..\..\!file!" >nul 2>&1
+        if not exist "%CURRENT_DIR%\!file!\.." mkdir "%CURRENT_DIR%\!file!\.." 2>nul
+        copy /y "!file!" "%CURRENT_DIR%\!file!" >nul 2>&1
     )
     if "!line:~0,14!"=="Будет добавлен" (
         echo Добавление: !file!
-        if not exist "..\..\!file!\.." mkdir "..\..\!file!\.." 2>nul
-        copy /y "!file!" "..\..\!file!" >nul 2>&1
+        if not exist "%CURRENT_DIR%\!file!\.." mkdir "%CURRENT_DIR%\!file!\.." 2>nul
+        copy /y "!file!" "%CURRENT_DIR%\!file!" >nul 2>&1
     )
 )
 
+echo -------------------------------
 echo.
-echo Обновление успешно завершено!
+echo ✅ Обновление успешно завершено!
 echo.
-echo ВНИМАНИЕ: Если программа не запускается после обновления,
-echo запустите setup.bat для переустановки зависимостей.
+echo ⚠️ ВНИМАНИЕ:
+echo    * Если программа не запускается после обновления,
+echo    * запустите setup.bat для переустановки зависимостей
+echo    * Нажмите любую клавишу для завершения...
+echo.
+pause > nul
 goto CLEANUP
 
 :CANCEL_UPDATE
 echo.
-echo Обновление отменено.
+echo ❌ Обновление отменено.
+echo    Нажмите любую клавишу для выхода...
+echo.
+pause > nul
+goto CLEANUP
 
 :CLEANUP
-:: Очищаем временные файлы
-cd ..
-rmdir /s /q temp
+:: Возвращаемся в исходную директорию и очищаем временные файлы
+cd "%CURRENT_DIR%"
+if exist temp (
+    rmdir /s /q temp
+    if exist temp (
+        echo.
+        echo ⚠️ Не удалось удалить временные файлы.
+        echo    Пожалуйста, удалите папку temp вручную.
+        echo.
+    )
+)
 
-echo.
-pause
+:: Финальная пауза перед выходом
+timeout /t 3
+exit
