@@ -1,5 +1,6 @@
 @echo off
 chcp 65001 > nul
+setlocal enabledelayedexpansion
 
 echo Проверка обновлений...
 
@@ -21,59 +22,71 @@ echo.
 echo Доступны следующие обновления:
 echo -------------------------------
 cd jl-youtube-vk-downloader-main
-for /f "delims=" %%F in ('dir /b /a-d') do (
+
+:: Проверяем обычные файлы
+for %%F in (*.*) do (
     if exist "..\..\%%F" (
-        fc /b "%%F" "..\..\%%F" > nul
+        fc /b "%%F" "..\..\%%F" >nul 2>&1
         if errorlevel 1 (
             echo Будет обновлен: %%F
+            set "has_updates=1"
         )
     ) else (
         echo Будет добавлен: %%F
+        set "has_updates=1"
     )
 )
 
-:: Проверяем папки
-for /f "delims=" %%D in ('dir /b /ad') do (
+:: Проверяем папки (кроме venv)
+for /d %%D in (*) do (
     if not "%%D"=="venv" (
         if not exist "..\..\%%D" (
             echo Будет добавлена папка: %%D
+            set "has_updates=1"
         )
     )
 )
 
-cd ..
 echo -------------------------------
-echo.
+
+:: Проверяем, есть ли обновления
+if not defined has_updates (
+    echo.
+    echo Обновления не требуются.
+    goto CLEANUP
+)
 
 :: Спрашиваем подтверждение на обновление
+echo.
 choice /c YN /n /m "Установить эти обновления? (Y/N) "
 if errorlevel 2 goto CANCEL_UPDATE
 
 :: Если пользователь согласился, выполняем обновление
-cd jl-youtube-vk-downloader-main
 echo.
 echo Установка обновлений...
-for /f "delims=" %%F in ('dir /b /a-d') do (
+
+:: Копируем файлы
+for %%F in (*.*) do (
     if exist "..\..\%%F" (
-        fc /b "%%F" "..\..\%%F" > nul
+        fc /b "%%F" "..\..\%%F" >nul 2>&1
         if errorlevel 1 (
             echo Обновление: %%F
-            copy /y "%%F" "..\.." > nul
+            copy /y "%%F" "..\.." >nul 2>&1
         )
     ) else (
         echo Добавление: %%F
-        copy /y "%%F" "..\.." > nul
+        copy /y "%%F" "..\.." >nul 2>&1
     )
 )
 
-:: Обновляем папки
-for /f "delims=" %%D in ('dir /b /ad') do (
+:: Копируем папки
+for /d %%D in (*) do (
     if not "%%D"=="venv" (
         if exist "..\..\%%D" (
-            xcopy /s /y /d "%%D" "..\..\%%D" > nul
+            xcopy /s /y /d "%%D" "..\..\%%D" >nul 2>&1
         ) else (
             echo Добавление папки: %%D
-            xcopy /s /y "%%D" "..\..\%%D" > nul
+            xcopy /s /y "%%D" "..\..\%%D" >nul 2>&1
         )
     )
 )
@@ -96,3 +109,5 @@ rmdir /s /q temp
 
 echo.
 pause
+
+endlocal
