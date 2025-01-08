@@ -115,12 +115,14 @@ for /f "usebackq tokens=*" %%L in ("..\changes.txt") do (
     if "!line:~0,14!"=="Будет обновлен" (
         echo Обновление: !file!
         if not exist "%CURRENT_DIR%\!file!\.." mkdir "%CURRENT_DIR%\!file!\.." 2>nul
-        copy /y "!file!" "%CURRENT_DIR%\!file!" >nul 2>&1
+        :: Используем PowerShell для правильной обработки кодировки
+        powershell -Command "$content = Get-Content '!file!' -Raw; [System.IO.File]::WriteAllText('%CURRENT_DIR%\!file!', $content, [System.Text.Encoding]::UTF8)" >nul 2>&1
     )
     if "!line:~0,14!"=="Будет добавлен" (
         echo Добавление: !file!
         if not exist "%CURRENT_DIR%\!file!\.." mkdir "%CURRENT_DIR%\!file!\.." 2>nul
-        copy /y "!file!" "%CURRENT_DIR%\!file!" >nul 2>&1
+        :: Используем PowerShell для правильной обработки кодировки
+        powershell -Command "$content = Get-Content '!file!' -Raw; [System.IO.File]::WriteAllText('%CURRENT_DIR%\!file!', $content, [System.Text.Encoding]::UTF8)" >nul 2>&1
     )
 )
 
