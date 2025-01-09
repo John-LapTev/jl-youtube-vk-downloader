@@ -7,7 +7,6 @@ A convenient video downloader that allows you to download content from YouTube a
 [🇷🇺 Русская версия](README_RU.md)
 
 ## Features
-
 - Download videos from YouTube and VK
 - Support for various video formats (up to 4K)
 - Language version selection for YouTube videos
@@ -23,41 +22,27 @@ A convenient video downloader that allows you to download content from YouTube a
 - Automatic updates check and update system
 
 ## Quick Start
-
-1. Download the latest version from [Releases](link_to_releases)
-2. Run the executable file
+1. Download the latest version: [JL YouTube & VK Video Downloader v1.3.1](https://github.com/John-LapTev/jl-youtube-vk-downloader/releases/download/v1.3.1/JL.YouTube.VK.Video.Downloader.v1.3.1.exe)
+2. Run the program
 3. Paste video URL
 4. Click "Get Info"
 5. Select quality and language
 6. Click "Download Video"
 
-## Updates
-
-The program includes an automatic update system:
-- At startup, you can check for updates
-- You can manually check updates by running UPDATE.bat
-- The system will show available updates before applying them
-- If program doesn't start after update, run setup.bat
-
 ## Documentation
-
 Detailed documentation is available in multiple languages:
 - [English Documentation](docs/en/GUIDE.md)
-- [Contributing Guide](docs/en/CONTRIBUTING.md)
+- [Contributing Guide](docs/en/CONTRIBUTING.md) 
 - [Change Log](docs/en/CHANGELOG.md)
 
-## Building from Source
-
-1. Install Python 3.10 or newer
-2. Clone the repository
-3. Run setup.bat to create virtual environment and install dependencies
-4. Use run.bat to start the program
-5. For creating exe, use build.bat
-
-Detailed build instructions in [Contributing Guide](docs/en/CONTRIBUTING.md)
+## For Developers
+⚠️ **Important**: If you want to work with source code:
+1. Clone the repository
+2. Extract `RUS_BAT.zip` to the project root folder (BAT files are stored in archive to preserve correct encoding)
+3. Run setup.bat to prepare environment
+4. See [Contributing Guide](docs/en/CONTRIBUTING.md) for details
 
 ## Technical Details
-
 - Python 3.10
 - yt-dlp 2024.12.23
 - customtkinter 5.2.1
@@ -65,9 +50,7 @@ Detailed build instructions in [Contributing Guide](docs/en/CONTRIBUTING.md)
 - Program Version: 1.3.1
 
 ## Author
-
 John LapTev (Telegram: [@JL_Stable_Diffusion](https://t.me/JL_Stable_Diffusion))
 
 ## License
-
 MIT License. See [LICENSE.md](LICENSE.md) for details.

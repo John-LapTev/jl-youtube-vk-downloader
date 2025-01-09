@@ -1,21 +1,18 @@
 # Contributing Guide
 
-## How to Contribute
+## Development Environment Setup
 
-1. Fork the repository
-2. Create a branch for the new feature or fix
-3. Make changes following the code standards
-4. Create a pull request with a description of changes
+### Initial Setup
+1. Install Python 3.10 or newer
+2. Clone the repository
+3. Extract `RUS_BAT.zip` to the project root folder
+   - BAT files are stored in archive to preserve correct Windows-1251 encoding
+   - After extraction, you should have: setup.bat, run.bat, build.bat, UPDATE.bat
+4. Run setup.bat to create virtual environment and install dependencies
+5. Use run.bat to start the program
+6. For creating exe, use build.bat
 
-## Code Standards
-
-- Use Python 3.10 or newer
-- Follow PEP 8
-- Add types for new functions
-- Update documentation when needed
-
-## Project Structure
-
+### Project Structure
 ```
 jl-youtube-vk-downloader/
 ├── docs/
@@ -35,34 +32,27 @@ jl-youtube-vk-downloader/
 │   ├── downloader.py
 │   ├── gui.py
 │   └── main.py
+├── build.bat              # From RUS_BAT.zip
+├── run.bat               # From RUS_BAT.zip
+├── setup.bat             # From RUS_BAT.zip
+├── UPDATE.bat            # From RUS_BAT.zip
+├── RUS_BAT.zip
 ├── .gitignore
-├── build.bat
-├── run.bat
-├── setup.bat
-├── UPDATE.bat
-└── requirements.txt
+├── requirements.txt
+├── README.md
+├── README_RU.md
+└── LICENSE.md
 ```
 
-## Building the Project
-
-1. Install dependencies:
-```bash
-setup.bat
-```
-
-2. Run for testing:
-```bash
-run.bat
-```
-
-3. Build exe file:
-```bash
-build.bat
-```
+## Code Standards
+- Use Python 3.10 or newer
+- Follow PEP 8
+- Comment code in Russian
+- Add types for new functions
+- Update documentation when needed
 
 ## Testing
-
-Test these operation modes:
+### Check Main Functions
 - Single video download
 - Multiple video download
 - Playlist download
@@ -70,43 +60,28 @@ Test these operation modes:
 - MP3 conversion
 - Auto-open folder
 - Load/save URL lists
-- Check all interface elements
-- Check update system functionality
-- Check progress display
+- All interface elements
+- Update system
+- Progress display
 
-## Update System Testing
-
-When testing the update system, verify:
-1. Update check at program start
-2. Manual update through UPDATE.bat
-3. Correct display of available updates
-4. Update confirmation dialog
-5. Successful file updates
-6. Correct operation after update
-7. Setup.bat execution after update if needed
-
-## Creating a Release
-
+### Creating a Release
 1. Update version in files:
    - main.py (APP_VERSION)
    - docs/*/CHANGELOG.md
    - README files if needed
-
-2. Test the full cycle:
+2. Test:
    - Clean installation
    - Update process
-   - All main features
+   - Main features
    - Building exe file
-
 3. Create release:
-   - Create new tag in repository
+   - Create tag in repository
    - Build final exe version
    - Create GitHub release
-   - Add changelog and description
-   - Upload compiled exe file
+   - Add changelog
+   - Upload exe file and RUS_BAT.zip
 
 ## Updating Documentation
-
 When making changes, update:
 1. Both README files (en/ru)
 2. Documentation in docs/en and docs/ru
@@ -114,19 +89,17 @@ When making changes, update:
 4. Update version numbers
 
 ## Reporting Issues
-
 - Use GitHub Issues section
 - Specify program version
-- Describe steps to reproduce the error
+- Describe reproduction steps
 - Attach error log from logs folder
 - Include system information
-- Screenshot if relevant
+- Add screenshot if needed
 
 ## Pull Request Process
-
 1. Create branch with descriptive name
 2. Update documentation if needed
-3. Test all affected functionality
+3. Test changes
 4. Create pull request with description:
    - What was changed
    - Why it was changed
